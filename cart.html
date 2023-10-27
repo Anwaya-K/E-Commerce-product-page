@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="cart.css">
+    <title>Cart Summary</title>
+</head>
+<body>
+    <h1>Cart Summary</h1>
+    <ul id="cart-items"></ul>
+    <p>Total: <span id="cart-total">0.00</span></p>
+    <button onclick="goBack()">Go Back</button>
+    <button onclick="clearCart()">Clear Cart</button>
+
+    <script>
+        const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+        const cartItemsList = document.getElementById("cart-items");
+        const cartTotal = document.getElementById("cart-total");
+
+        function updateCartSummary() {
+            cartItemsList.innerHTML = "";
+
+            let total = 0;
+            cartItems.forEach((item, index) => {
+                const listItem = document.createElement("li");
+                listItem.textContent = `${item.quantity}x ${item.name} - ₹${(item.price * item.quantity).toFixed(2)}`;
+
+                const removeButton = document.createElement("button");
+                removeButton.textContent = "Remove Item";
+                removeButton.onclick = () => removeItem(index);
+
+                listItem.appendChild(removeButton);
+                cartItemsList.appendChild(listItem);
+                total += item.price * item.quantity;
+            });
+
+            cartTotal.textContent = `₹${total.toFixed(2)}`;        }
+
+        function removeItem(index) {
+            cartItems.splice(index, 1);
+            localStorage.setItem("cart", JSON.stringify(cartItems));
+            updateCartSummary();
+        }
+
+        updateCartSummary();
+
+        function goBack() {
+            // Use the history object to navigate back without a page refresh
+            if (history.length > 1) {
+                history.back();
+            } else {
+                // If there's no previous page, you can specify a default URL or take appropriate action
+                alert("No previous page available.");
+            }
+        }
+
+        function clearCart() {
+            localStorage.removeItem("cart");
+            cartItems.length = 0;
+            updateCartSummary();
+        }
+    </script>
+</body>
+</html>
